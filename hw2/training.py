@@ -200,7 +200,16 @@ class BlocksTrainer(Trainer):
         #  - Calculate number of correct predictions (make sure it's an int,
         #    not a tensor) as num_correct.
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+#         print(self.model.params()[0][0])
+        x = X.reshape(X.shape[0], -1)        
+        y_hat = self.model.forward(x)
+        loss = self.loss_fn(y_hat, y)
+        self.optimizer.zero_grad()
+        dout = self.loss_fn.backward()
+        self.model.backward(dout)
+        self.optimizer.step()
+        y_pred = torch.argmax(y_hat, dim=1)
+        num_correct = int(torch.sum(y_pred == y))
         # ========================
 
         return BatchResult(loss, num_correct)

@@ -9,16 +9,14 @@ math (delimited with $$).
 # Part 1 answers
 
 part1_q1 = r"""
-**Your answer:**
 
+1. the jacobian matrix w.r.t to X will have the same shape as the weights matrix.
+X's shape is 128x1024 so in order to get the out matrix with shape of 128x2048, the shape of the weights matrix will have to be 1024x2048 and that's the jacobians shape.
 
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
-
+2. first, we will calculate how many bits we need to store in order to store the whole jacobian matrix.
+1024*2048*32 = 67,108,864 bits.
+now we need to convert it to gigabytes:
+67,108,864/8/1024/1024/1024 = 0.0078125 GB of RAM memory
 """
 
 # ==============
@@ -29,7 +27,9 @@ def part2_overfit_hp():
     wstd, lr, reg = 0, 0, 0
     # TODO: Tweak the hyperparameters until you overfit the small dataset.
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    wstd = 0.05
+    lr = 0.4
+    reg = 0.1
     # ========================
     return dict(wstd=wstd, lr=lr, reg=reg)
 

@@ -313,9 +313,14 @@ class CrossEntropyLoss(Block):
         # TODO: Compute the cross entropy loss using the last formula from the
         #  notebook (i.e. directly using the class scores).
         # ====== YOUR CODE: ======
-        y_x = x[range(N), y]
-        loss_vec = -y_x + torch.log(torch.sum(torch.exp(x), dim=1))
-        loss = torch.mean(loss_vec)
+        x_y = x[range(N), y]
+        exp_mat = torch.exp(x)
+        ones = torch.ones(x.shape[1])
+        sum_rows = torch.matmul(exp_mat, ones)
+        self.softmax = (exp_mat.T / sum_rows).T
+
+        loss = -x_y + torch.log(sum_rows)
+        loss = torch.mean(loss)
         # ========================
 
         self.grad_cache["x"] = x
@@ -334,10 +339,9 @@ class CrossEntropyLoss(Block):
 
         # TODO: Calculate the gradient w.r.t. the input x.
         # ====== YOUR CODE: ======
-        delta = torch.zeros_like(x)
-        delta.scatter_(1, y.reshape(-1, 1), 1)
-        other = torch.exp(x) / torch.sum(torch.exp(x), dim=1).reshape(-1, 1)
-        dx = dout * (-delta + other) / N
+        softmax = self.softmax
+        softmax[range(N), y] -= 1
+        dx = dout * softmax / N
         # ========================
 
         return dx
@@ -483,7 +487,16 @@ class MLP(Block):
 
         # TODO: Build the MLP architecture as described.
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        kw = {'wstd': kw['wstd']} if 'wstd' in kw else {}
+        for Din, Dout in zip([in_features] + hidden_features, hidden_features):
+            blocks.append(Linear(Din, Dout, **kw))
+            if activation == "sigmoid":
+                blocks.append(Sigmoid())
+            else:
+                blocks.append(ReLU())
+#             if dropout:
+#                 blocks.append(Dropout(p=dropout))
+        blocks.append(Linear(hidden_features[-1], num_classes, **kw))
         # ========================
 
         self.sequence = Sequential(*blocks)
