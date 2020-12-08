@@ -80,9 +80,9 @@ class LeakyReLU(Block):
         :return: ReLU of each sample in x.
         """
 
-        # TODO: Implement the LeakyReLU operation.
+        # DONE: Implement the LeakyReLU operation.
         # ====== YOUR CODE: ======
-        out = torch.max(x, self.alpha*x)
+        out = torch.max(x, self.alpha * x)
         # ========================
 
         self.grad_cache["x"] = x
@@ -95,9 +95,9 @@ class LeakyReLU(Block):
         """
         x = self.grad_cache["x"]
 
-        # TODO: Implement gradient w.r.t. the input x
+        # DONE: Implement gradient w.r.t. the input x
         # ====== YOUR CODE: ======
-        dx = dout*torch.where(x>0, torch.ones_like(x), self.alpha*torch.ones_like(x))
+        dx = dout * torch.where(x > 0, torch.ones_like(x), self.alpha * torch.ones_like(x))
         # ========================
 
         return dx
@@ -139,7 +139,7 @@ class Sigmoid(Block):
         :return: Sigmoid of each sample in x.
         """
 
-        # TODO: Implement the Sigmoid function.
+        # DONE: Implement the Sigmoid function.
         #  Save whatever you need into grad_cache.
         # ====== YOUR CODE: ======
         out = 1/(1+torch.exp(-x))
@@ -154,10 +154,10 @@ class Sigmoid(Block):
         :return: Gradient with respect to block input, shape (N, *)
         """
 
-        # TODO: Implement gradient w.r.t. the input x
+        # DONE: Implement gradient w.r.t. the input x
         # ====== YOUR CODE: ======
         x = self.grad_cache["x"]
-        dx = dout*(1/(1+torch.exp(-x))*(1-1/(1+torch.exp(-x))))
+        dx = dout * (1/(1 + torch.exp(-x)) * (1 - 1/(1 + torch.exp(-x))))
         # ========================
 
         return dx
@@ -182,10 +182,10 @@ class TanH(Block):
         :return: Sigmoid of each sample in x.
         """
 
-        # TODO: Implement the tanh function.
+        # DONE: Implement the tanh function.
         #  Save whatever you need into grad_cache.
         # ====== YOUR CODE: ======
-        out = (torch.exp(x)-torch.exp(-x))/(torch.exp(x)+torch.exp(-x))
+        out = (torch.exp(x) - torch.exp(-x)) / (torch.exp(x) + torch.exp(-x))
         self.grad_cache["x"] = x
         # ========================
 
@@ -197,10 +197,10 @@ class TanH(Block):
         :return: Gradient with respect to block input, shape (N, *)
         """
 
-        # TODO: Implement gradient w.r.t. the input x
+        # DONE: Implement gradient w.r.t. the input x
         # ====== YOUR CODE: ======
         x = self.grad_cache["x"]
-        dx = dout*(4/((torch.exp(x)+torch.exp(-x))**2))
+        dx = dout * (4 / ((torch.exp(x) + torch.exp(-x))**2))
         # ========================
 
         return dx
@@ -224,7 +224,7 @@ class Linear(Block):
         self.in_features = in_features
         self.out_features = out_features
 
-        # TODO: Create the weight matrix (self.w) and bias vector (self.b).
+        # DONE: Create the weight matrix (self.w) and bias vector (self.b).
         # ====== YOUR CODE: ======
         self.w = torch.normal(torch.zeros(out_features, in_features), wstd)
         self.b = torch.normal(torch.zeros(out_features), wstd)
@@ -245,7 +245,7 @@ class Linear(Block):
         :return: Affine transform of each sample in x.
         """
 
-        # TODO: Compute the affine transform
+        # DONE: Compute the affine transform
         # ====== YOUR CODE: ======
         N = (x.shape[0])
         x = x.view(N, -1)
@@ -262,7 +262,7 @@ class Linear(Block):
         """
         x = self.grad_cache["x"]
 
-        # TODO: Compute
+        # DONE: Compute
         #   - dx, the gradient of the loss with respect to x
         #   - dw, the gradient of the loss with respect to w
         #   - db, the gradient of the loss with respect to b
@@ -308,12 +308,13 @@ class CrossEntropyLoss(Block):
         xmax, _ = torch.max(x, dim=1, keepdim=True)
         x = x - xmax
 
-        # TODO: Compute the cross entropy loss using the last formula from the
+        # DONE: Compute the cross entropy loss using the last formula from the
         #  notebook (i.e. directly using the class scores).
         # ====== YOUR CODE: ======
         D = x.shape[1]
         x_y = x[range(N), y]
-        #summing across rows
+
+        # summing across rows
         sum = torch.sum(torch.exp(x), dim=1)
         loss = torch.mean(torch.log(sum) - x_y)
         # ========================
@@ -332,12 +333,12 @@ class CrossEntropyLoss(Block):
         y = self.grad_cache["y"]
         N = x.shape[0]
 
-        # TODO: Calculate the gradient w.r.t. the input x.
+        # DONE: Calculate the gradient w.r.t. the input x.
         # ====== YOUR CODE: ======
-        #summing across rows
+        # summing across rows
         sum = torch.sum(torch.exp(x), dim=1)
         
-        #softmax = e^x/sum(e^x)
+        # softmax = e^x/sum(e^x)
         softmax = (torch.exp(x).T / sum).T
         
         softmax[range(N), y] -= 1
@@ -397,11 +398,11 @@ class Sequential(Block):
     def forward(self, x, **kw):
         out = None
 
-        # TODO: Implement the forward pass by passing each block's output
+        # DONE: Implement the forward pass by passing each block's output
         #  as the input of the next.
         # ====== YOUR CODE: ======
         last_layer_res = x
-        #we need a tmp variable to store results
+        # we need a tmp variable to store results
         for block in self.blocks:
             last_layer_res = block.forward(last_layer_res, **kw)
         out = last_layer_res
@@ -412,14 +413,14 @@ class Sequential(Block):
     def backward(self, dout):
         din = None
 
-        # TODO: Implement the backward pass.
+        # DONE: Implement the backward pass.
         #  Each block's input gradient should be the previous block's output
         #  gradient. Behold the backpropagation algorithm in action!
         # ====== YOUR CODE: ======
         reversed_blocks_list = list(self.blocks)
         reversed_blocks_list.reverse()
         
-        #Doing back iteration on the blocks
+        # Doing back iteration on the blocks
         last_layer_res = dout
         for block in reversed_blocks_list:
             last_layer_res = block.backward(last_layer_res)
@@ -432,7 +433,7 @@ class Sequential(Block):
     def params(self):
         params = []
 
-        # TODO: Return the parameter tuples from all blocks.
+        # DONE: Return the parameter tuples from all blocks.
         # ====== YOUR CODE: ======
         params = sum((b.params() for b in self.blocks), [])
         # ========================
@@ -490,7 +491,7 @@ class MLP(Block):
         """
         blocks = []
 
-        # TODO: Build the MLP architecture as described.
+        # DONE: Build the MLP architecture as described.
         # ====== YOUR CODE: ======
         linear_kw = {}
 #         {'wstd':kw['wstd']} if 'wstd' in kw else {}

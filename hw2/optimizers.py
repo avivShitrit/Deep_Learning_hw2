@@ -68,7 +68,7 @@ class VanillaSGD(Optimizer):
             if dp is None:
                 continue
 
-            # TODO: Implement the optimizer step.
+            # DONE: Implement the optimizer step.
             #  Update the gradient according to regularization and then
             #  update the parameters tensor.
             # ====== YOUR CODE: ======

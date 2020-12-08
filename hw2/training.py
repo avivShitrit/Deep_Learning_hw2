@@ -71,7 +71,7 @@ class Trainer(abc.ABC):
                 verbose = True
             self._print(f"--- EPOCH {epoch+1}/{num_epochs} ---", verbose)
 
-            # TODO: Train & evaluate for one epoch
+            # DONE: Train & evaluate for one epoch
             #  - Use the train/test_epoch methods.
             #  - Save losses and accuracies in the lists above.
             #  - Implement early stopping. This is a very useful and
@@ -80,7 +80,32 @@ class Trainer(abc.ABC):
             #    save the model to the file specified by the checkpoints
             #    argument.
             # ====== YOUR CODE: ======
-            raise NotImplementedError()
+            # train and add results to train lists
+            train_res = self.train_epoch(dl_train, verbose=verbose, **kw)
+            current_train_loss = sum(train_res.losses) / len(train_res.losses)
+            train_loss.append(current_train_loss)
+            train_acc.append(train_res.accuracy)
+            
+            # test and results to test lists
+            test_res = self.test_epoch(dl_test, verbose=verbose, **kw)
+            current_test_loss = sum(test_res.losses) / len(test_res.losses)
+            test_loss.append(current_test_loss)
+            test_acc.append(test_res.accuracy)
+           
+            # update best_acc and save the improves result via checkpoints
+            if best_acc is None or best_acc < test_acc[-1]:
+                best_acc = test_acc[-1]
+                no_improvement = 0
+                if checkpoints:
+                    timestamp = '{:%Y-%b-%d %H:%M:%S}'.format(datetime.datetime.now())
+                    filename = f'{checkpoints}_{timestamp}.pt'
+                    torch.save(self.model, filename)
+            else:
+                no_improvement += 1
+            
+            if early_stopping is not None and no_improvement >= early_stopping:
+                actual_num_epochs = epoch
+                break
             # ========================
 
         return FitResult(actual_num_epochs, train_loss, train_acc, test_loss, test_acc)
@@ -193,7 +218,7 @@ class BlocksTrainer(Trainer):
     def train_batch(self, batch) -> BatchResult:
         X, y = batch
 
-        # TODO: Train the Block model on one batch of data.
+        # DONE: Train the Block model on one batch of data.
         #  - Forward pass
         #  - Backward pass
         #  - Optimize params
@@ -217,9 +242,12 @@ class BlocksTrainer(Trainer):
     def test_batch(self, batch) -> BatchResult:
         X, y = batch
 
-        # TODO: Evaluate the Block model on one batch of data.
+        # DONE: Evaluate the Block model on one batch of data.
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        y_pred = self.model.forward(X)
+        loss = self.loss_fn(y_pred, y)
+        y_pred = torch.argmax(y_pred, dim=1)
+        num_correct = torch.sum(y == y_pred).int()
         # ========================
 
         return BatchResult(loss, num_correct)
