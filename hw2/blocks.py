@@ -82,7 +82,7 @@ class LeakyReLU(Block):
 
         # TODO: Implement the LeakyReLU operation.
         # ====== YOUR CODE: ======
-        out = torch.where(x>(self.alpha*x), x, self.alpha*x)
+        out = torch.max(x, self.alpha*x)
         # ========================
 
         self.grad_cache["x"] = x
@@ -116,7 +116,7 @@ class ReLU(LeakyReLU):
 
     def __init__(self):
         # ====== YOUR CODE: ======
-        super().__init__(0)
+        super().__init__(alpha=0)
         # ========================
 
     def __repr__(self):
@@ -247,7 +247,9 @@ class Linear(Block):
 
         # TODO: Compute the affine transform
         # ====== YOUR CODE: ======
-        out = torch.mm(x, self.w.t()) + self.b
+        N = (x.shape[0])
+        x = x.view(N, -1)
+        out = torch.matmul(x, torch.transpose(self.w, 0, 1)) + self.b
         # ========================
 
         self.grad_cache["x"] = x
@@ -266,14 +268,10 @@ class Linear(Block):
         #   - db, the gradient of the loss with respect to b
         #  Note: You should ACCUMULATE gradients in dw and db.
         # ====== YOUR CODE: ======
-        if self.w.grad is not None:
-            self.w.grad.data.zero_()
-        if self.b.grad is not None:
-            self.b.grad.data.zero_()
-            
-        dx = torch.mm(dout, self.w)
-        self.db = (torch.sum(dout, dim=0))
-        self.dw = (torch.mm(dout.t(), x))
+        N = dout.shape[0]
+        dx = torch.matmul(dout, self.w)
+        self.dw += torch.matmul(dout.T, x)
+        self.db += (torch.matmul(torch.ones(N), dout)).T
         # ========================
         return dx
 
@@ -313,14 +311,11 @@ class CrossEntropyLoss(Block):
         # TODO: Compute the cross entropy loss using the last formula from the
         #  notebook (i.e. directly using the class scores).
         # ====== YOUR CODE: ======
+        D = x.shape[1]
         x_y = x[range(N), y]
-        exp_mat = torch.exp(x)
-        ones = torch.ones(x.shape[1])
-        sum_rows = torch.matmul(exp_mat, ones)
-        self.softmax = (exp_mat.T / sum_rows).T
-
-        loss = -x_y + torch.log(sum_rows)
-        loss = torch.mean(loss)
+        #summing across rows
+        sum = torch.sum(torch.exp(x), dim=1)
+        loss = torch.mean(torch.log(sum) - x_y)
         # ========================
 
         self.grad_cache["x"] = x
@@ -339,7 +334,12 @@ class CrossEntropyLoss(Block):
 
         # TODO: Calculate the gradient w.r.t. the input x.
         # ====== YOUR CODE: ======
-        softmax = self.softmax
+        #summing across rows
+        sum = torch.sum(torch.exp(x), dim=1)
+        
+        #softmax = e^x/sum(e^x)
+        softmax = (torch.exp(x).T / sum).T
+        
         softmax[range(N), y] -= 1
         dx = dout * softmax / N
         # ========================
@@ -400,9 +400,11 @@ class Sequential(Block):
         # TODO: Implement the forward pass by passing each block's output
         #  as the input of the next.
         # ====== YOUR CODE: ======
-        out = x
+        last_layer_res = x
+        #we need a tmp variable to store results
         for block in self.blocks:
-            out = block(out, **kw)
+            last_layer_res = block.forward(last_layer_res, **kw)
+        out = last_layer_res
         # ========================
 
         return out
@@ -414,12 +416,15 @@ class Sequential(Block):
         #  Each block's input gradient should be the previous block's output
         #  gradient. Behold the backpropagation algorithm in action!
         # ====== YOUR CODE: ======
-        for (t, _) in self.params():
-            if t.grad is not None:
-                t.grad.data.zero_()
-        din = dout
-        for block in reversed(self.blocks):
-            din = block.backward(din)
+        reversed_blocks_list = list(self.blocks)
+        reversed_blocks_list.reverse()
+        
+        #Doing back iteration on the blocks
+        last_layer_res = dout
+        for block in reversed_blocks_list:
+            last_layer_res = block.backward(last_layer_res)
+            
+        din = last_layer_res
         # ========================
 
         return din
@@ -487,16 +492,17 @@ class MLP(Block):
 
         # TODO: Build the MLP architecture as described.
         # ====== YOUR CODE: ======
-        kw = {'wstd': kw['wstd']} if 'wstd' in kw else {}
+        linear_kw = {}
+#         {'wstd':kw['wstd']} if 'wstd' in kw else {}
         for Din, Dout in zip([in_features] + hidden_features, hidden_features):
-            blocks.append(Linear(Din, Dout, **kw))
+            blocks.append(Linear(in_features=Din, out_features=Dout, **linear_kw))
             if activation == "sigmoid":
                 blocks.append(Sigmoid())
             else:
                 blocks.append(ReLU())
-#             if dropout:
-#                 blocks.append(Dropout(p=dropout))
-        blocks.append(Linear(hidden_features[-1], num_classes, **kw))
+            if dropout > 0:
+                blocks.append(Dropout(dropout))
+        blocks.append(Linear(in_features=hidden_features[-1], out_features=num_classes, **linear_kw))
         # ========================
 
         self.sequence = Sequential(*blocks)
