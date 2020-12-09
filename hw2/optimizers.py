@@ -68,7 +68,7 @@ class VanillaSGD(Optimizer):
             if dp is None:
                 continue
 
-            # DONE: Implement the optimizer step.
+            # TODO: Implement the optimizer step.
             #  Update the gradient according to regularization and then
             #  update the parameters tensor.
             # ====== YOUR CODE: ======
@@ -92,11 +92,11 @@ class MomentumSGD(Optimizer):
 
         # TODO: Add your own initializations as needed.
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        self.velocities = [torch.zeros_like(param) for param, _ in self.params]
         # ========================
 
     def step(self):
-        for p, dp in self.params:
+        for (p, dp), v in zip(self.params, self.velocities):
             if dp is None:
                 continue
 
@@ -104,7 +104,9 @@ class MomentumSGD(Optimizer):
             # update the parameters tensor based on the velocity. Don't forget
             # to include the regularization term.
             # ====== YOUR CODE: ======
-            raise NotImplementedError()
+            dp += (self.reg * p)
+            v = ((self.momentum * v) - (self.learn_rate * dp))
+            p += v
             # ========================
 
 
@@ -125,11 +127,11 @@ class RMSProp(Optimizer):
 
         # TODO: Add your own initializations as needed.
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        self.decay_grad = [torch.zeros_like(param) for param, _ in self.params]
         # ========================
 
     def step(self):
-        for p, dp in self.params:
+        for (p, dp), r in zip(self.params, self.decay_grad):
             if dp is None:
                 continue
 
@@ -138,5 +140,7 @@ class RMSProp(Optimizer):
             # average of it's previous gradients. Use it to update the
             # parameters tensor.
             # ====== YOUR CODE: ======
-            raise NotImplementedError()
+            dp += self.reg * p
+            r = self.decay * r + (1 - self.decay) * (dp**2)
+            p -= dp * (self.learn_rate / torch.sqrt(r + self.eps))
             # ========================

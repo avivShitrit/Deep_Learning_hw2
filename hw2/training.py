@@ -82,14 +82,14 @@ class Trainer(abc.ABC):
             # ====== YOUR CODE: ======
             # train and add results to train lists
             train_res = self.train_epoch(dl_train, verbose=verbose, **kw)
-            current_train_loss = sum(train_res.losses) / len(train_res.losses)
-            train_loss.append(current_train_loss)
+#             current_train_loss = sum(train_res.losses) / len(train_res.losses)
+            train_loss.extend(train_res.losses)
             train_acc.append(train_res.accuracy)
             
             # test and results to test lists
             test_res = self.test_epoch(dl_test, verbose=verbose, **kw)
-            current_test_loss = sum(test_res.losses) / len(test_res.losses)
-            test_loss.append(current_test_loss)
+#             current_test_loss = sum(test_res.losses) / len(test_res.losses)
+            test_loss.extend(test_res.losses)
             test_acc.append(test_res.accuracy)
            
             # update best_acc and save the improves result via checkpoints

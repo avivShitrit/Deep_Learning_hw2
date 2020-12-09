@@ -40,11 +40,17 @@ def part2_optim_hp():
     # TODO: Tweak the hyperparameters to get the best results you can.
     # You may want to use different learning rates for each optimizer.
     # ====== YOUR CODE: ======
-    wstd = 0.1
+    wstd = 0.01
     lr_vanilla = 0.03
-    lr_momentum = 0.005
-    lr_rmsprop = 0.003
-    reg = 0.001 
+    lr_momentum = 0.04
+    lr_rmsprop = 0.000026
+    reg = 0.01 
+    
+#         wstd = 0.1
+#     lr_vanilla = 0.03
+#     lr_momentum = 0.005
+#     lr_rmsprop = 0.003
+#     reg = 0.001 
     # ========================
     return dict(
         wstd=wstd,
@@ -60,7 +66,8 @@ def part2_dropout_hp():
     # TODO: Tweak the hyperparameters to get the model to overfit without
     # dropout.
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    wstd = 0.1
+    lr = 0.01
     # ========================
     return dict(wstd=wstd, lr=lr)
 
@@ -68,26 +75,23 @@ def part2_dropout_hp():
 part2_q1 = r"""
 **Your answer:**
 
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
+The graph results we received match our expectations. As you can see when introducing the dropouts the test training performance improves. 
+Without any dropouts the model suffers from over-fitting to the training set (with almost 100 accuracy) and the test set performance are poor.
+With 0.4 dropout the generalisation error decreases, and as a result the test set performance increased.
+With 0.8 dropout the learning rate of the model is very slow, and the number of epoch preformed wasn't sufficient to the learning rate. 
+But, we can see that the generalisation error decreased even more so that with the 0.4 dropout and so the training set and test set are preforming similarly.
 
 """
 
 part2_q2 = r"""
 **Your answer:**
 
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
+Yes, it's possible but it depends on the training set size.
+The Cross-Entropy (CE) loss function is a continues function that calculates the distance between the prediction to the ground truth. 
+On the other hand the accuracy is a binary result calculated based on the correctness of the classification.
+Therefor, in some cases when the accuracy is low and we have samples that have predictions, on the higher end (or lower end) of the 50% cut off point, we'll get that the loss increases which than effects the classification rate. 
+On the other hand the accuracy also increases due to the fact that we classified (by chance) correctly.
+When the training set is big enough this occurrences are more rare.
 
 """
 # ==============

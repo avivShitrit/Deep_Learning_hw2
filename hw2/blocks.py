@@ -362,19 +362,28 @@ class Dropout(Block):
         self.p = p
 
     def forward(self, x, **kw):
-        # TODO: Implement the dropout forward pass.
+        # DONE: Implement the dropout forward pass.
         #  Notice that contrary to previous blocks, this block behaves
         #  differently a according to the current training_mode (train/test).
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        if self.training_mode:
+            drops = torch.bernoulli((1 - self.p) * torch.ones_like(x))
+            out = x * drops / (1 - self.p)
+            self.grad_cache['drops'] = drops
+        else:
+            out = x
         # ========================
 
         return out
 
     def backward(self, dout):
-        # TODO: Implement the dropout backward pass.
+        # DONE: Implement the dropout backward pass.
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        if self.training_mode:
+            drops = self.grad_cache['drops']
+            dx = dout * drops / (1 - self.p)
+        else:
+            dx = dout
         # ========================
 
         return dx
