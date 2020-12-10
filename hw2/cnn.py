@@ -68,7 +68,7 @@ class ConvClassifier(nn.Module):
         in_channels, in_h, in_w, = tuple(self.in_size)
 
         layers = []
-        # TODO: Create the feature extractor part of the model:
+        # DONE: Create the feature extractor part of the model:
         #  [(CONV -> ACT)*P -> POOL]*(N/P)
         #  Apply activation function after each conv, using the activation type and
         #  parameters.
@@ -82,50 +82,61 @@ class ConvClassifier(nn.Module):
         conv_kernel = self.conv_params['kernel_size']
         pool_kernel = self.pooling_params['kernel_size']
         
-        for i, (inch, outch) in enumerate(zip([in_channels] + self.channels, self.channels)):
-            layers.append(nn.Conv2d(inch, outch, **self.conv_params))
+        N = len(self.channels)
+        P = self.pool_every
+        
+        for i in range(N):
+            # conv layer
+            layers.append(nn.Conv2d(in_channels=in_channels, out_channels=self.channels[i], **self.conv_params))
+
+            # relu / leaky relu layer
             if self.activation_type == "lrelu":
                 layers.append(nn.LeakyReLU(**self.activation_params))
             else: 
                 layers.append(nn.ReLU(**self.activation_params))
-                
-            temp_dim = ((2 * padding - 1 * (conv_kernel - 1) - 1) / stride)
-            in_h = int(in_h + temp_dim) + 1
-            in_w = int(in_w + temp_dim) + 1
+
+            # update dimensions
+            temp_dim = (2 * padding - conv_kernel)
+            in_h = int(torch.floor(torch.tensor((in_h + temp_dim) / stride)) + 1) 
+            in_w = int(torch.floor(torch.tensor((in_w + temp_dim) / stride)) + 1)
+            in_channels = self.channels[i]
             
-            if (i + 1) % self.pool_every == 0 and (i + 1) < len(self.channels):
+            # pooling layer
+            if (i + 1) % P == 0:    
                 if self.pooling_type == "avg":
                     layers.append(nn.AvgPool2d(**self.pooling_params))
                 else:
                     layers.append(nn.MaxPool2d(**self.pooling_params))
-                    
-            in_h = int(in_h + pool_kernel)
-            in_w = int(in_w + pool_kernel)
             
-        self.in_h = in_h
-        self.in_w = in_w
+                #update dimensions
+                in_h = int(torch.floor(torch.tensor((in_h - pool_kernel) / pool_kernel)) + 1)
+                in_w = int(torch.floor(torch.tensor((in_w - pool_kernel) / pool_kernel)) + 1)
+        
+        
         # ========================
+        self.in_size = self.channels[-1], in_h, in_w
         seq = nn.Sequential(*layers)
         return seq
 
     def _make_classifier(self):
         layers = []
-        # TODO: Create the classifier part of the model:
+        # DONE: Create the classifier part of the model:
         #  (FC -> ACT)*M -> Linear
         #  You'll first need to calculate the number of features going in to
         #  the first linear layer.
         #  The last Linear layer should have an output dim of out_classes.
         # ====== YOUR CODE: ======
-        first_in_dims = int(self.channels[-1] * self.in_h * self.in_w)
+        first_in_dims = int(self.channels[-1] * self.in_size[1] * self.in_size[2])
         
         for indims, outdims in zip([first_in_dims] + self.hidden_dims, self.hidden_dims):
             layers.append(nn.Linear(indims, outdims))
+            
             if self.activation_type == "lrelu":
                 layers.append(nn.LeakyReLU(**self.activation_params))
             else: 
                 layers.append(nn.ReLU(**self.activation_params)) 
+                
         layers.append(nn.Linear(self.hidden_dims[-1], self.out_classes))
-            
         # ========================
         seq = nn.Sequential(*layers)
         return seq
@@ -138,7 +149,6 @@ class ConvClassifier(nn.Module):
         features = self.feature_extractor(x)
         flatten_features = features.view(features.size(0), -1)
         out = self.classifier(flatten_features)
-        print(out)
         # ========================
         return out
 
@@ -198,7 +208,11 @@ class ResidualBlock(nn.Module):
         #  - Don't create layers which you don't use! This will prevent
         #    correct comparison in the test.
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        
+        # main path
+        
+        
+        
         # ========================
 
     def forward(self, x):

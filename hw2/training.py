@@ -142,7 +142,7 @@ class Trainer(abc.ABC):
             the number of correctly classified samples in the batch.
         """
         raise NotImplementedError()
-
+        
     @abc.abstractmethod
     def test_batch(self, batch) -> BatchResult:
         """
@@ -269,7 +269,16 @@ class TorchTrainer(Trainer):
         #  - Optimize params
         #  - Calculate number of correct predictions
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        self.optimizer.zero_grad()
+        
+        y_pred = self.model.forward(X)
+        loss = self.loss_fn(y_pred, y)
+
+        loss.backward()
+        self.optimizer.step()
+
+        y_pred = torch.argmax(y_pred, dim=1)
+        num_correct = torch.sum(y == y_pred).int()
         # ========================
 
         return BatchResult(loss, num_correct)
@@ -285,7 +294,10 @@ class TorchTrainer(Trainer):
             #  - Forward pass
             #  - Calculate number of correct predictions
             # ====== YOUR CODE: ======
-            raise NotImplementedError()
+            y_pred = self.model.forward(X)
+            loss = self.loss_fn(y_pred, y)
+            y_pred = torch.argmax(y_pred, dim=1)
+            num_correct = torch.sum(y == y_pred).int()
             # ========================
 
         return BatchResult(loss, num_correct)
