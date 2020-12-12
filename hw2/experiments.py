@@ -40,8 +40,13 @@ def run_experiment(
     pool_every=2,
     hidden_dims=[1024],
     model_type="cnn",
+    conv_params={},
+    activaion_type="relu",
+    activaion_params={},
+    pooling_type="avg",
+    pooling_params={},
     # You can add extra configuration for your experiments here
-    **kw,
+    **kw
 ):
     """
     Executes a single run of a Part3 experiment with a single configuration.
@@ -61,7 +66,8 @@ def run_experiment(
     ds_test = CIFAR10(root=DATA_DIR, download=True, train=False, transform=tf)
 
     if not device:
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        device = torch.device("cpu")
 
     # Select model class
     if model_type not in MODEL_TYPES:
@@ -77,7 +83,40 @@ def run_experiment(
     #   for you automatically.
     fit_res = None
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    x0, _ = ds_train[0]
+    in_size = x0.shape
+    num_classes = 10
+    channels = []
+    for x in filters_per_layer:
+        channels.extend([x] * layers_per_block)
+    model = model_cls(
+        in_size=in_size,
+        out_classes=num_classes,
+        channels=channels,
+        pool_every=pool_every,
+        hidden_dims=hidden_dims,
+        conv_params=conv_params,
+        activation_type=activaion_type,
+        activation_params=activaion_params,
+        pooling_type=pooling_type,
+        pooling_params=pooling_params
+    )
+    loss_fn = torch.nn.CrossEntropyLoss()
+    optimizer = torch.optim.SGD(model.parameters(), lr=1e-2, momentum=0.9,)
+    trainer = training.TorchTrainer(model, loss_fn, optimizer, device)
+
+    dl_train = torch.utils.data.DataLoader(ds_train, bs_train, shuffle=False)
+    dl_test = torch.utils.data.DataLoader(ds_test, bs_test, shuffle=False)
+
+    fit_res = trainer.fit(
+        dl_train=dl_train,
+        dl_test=dl_test,
+        num_epochs=2,
+        checkpoints=checkpoints,
+        early_stopping=early_stopping,
+        print_every=1
+    )
+
     # ========================
 
     save_experiment(run_name, out_dir, cfg, fit_res)

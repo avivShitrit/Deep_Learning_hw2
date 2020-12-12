@@ -81,7 +81,8 @@ class ConvClassifier(nn.Module):
         padding = self.conv_params['padding']
         stride = self.conv_params['stride']
         conv_kernel = self.conv_params['kernel_size']
-        pool_kernel = self.pooling_params['kernel_size']
+        pool_kernel = pool_kernel = self.pooling_params['kernel_size'] if "kernel_size" in self.pooling_params.keys() else 1
+        self.pooling_params['kernel_size'] = pool_kernel
 
         N = len(self.channels)
         P = self.pool_every
@@ -316,7 +317,8 @@ class ResNetClassifier(ConvClassifier):
         # ====== YOUR CODE: ======
         N = len(self.channels)
         P = self.pool_every
-        pool_kernel = self.pooling_params['kernel_size']
+        pool_kernel = self.pooling_params['kernel_size'] if "kernel_size" in self.pooling_params.keys() else 1
+        self.pooling_params['kernel_size'] = pool_kernel
 
         for i in range(N // P):
 
