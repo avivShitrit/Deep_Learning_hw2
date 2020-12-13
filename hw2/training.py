@@ -59,7 +59,7 @@ class Trainer(abc.ABC):
         :param print_every: Print progress every this number of epochs.
         :return: A FitResult object containing train and test losses per epoch.
         """
-        actual_num_epochs = 0
+        actual_num_epochs = num_epochs
         train_loss, train_acc, test_loss, test_acc = [], [], [], []
 
         best_acc = None
