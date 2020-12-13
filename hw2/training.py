@@ -84,6 +84,8 @@ class Trainer(abc.ABC):
             train_res = self.train_epoch(dl_train, verbose=verbose, **kw)
 #             current_train_loss = sum(train_res.losses) / len(train_res.losses)
             train_loss.extend(train_res.losses)
+            print(len(train_res.losses), train_res.losses[0])
+            
             train_acc.append(train_res.accuracy)
             
             # test and results to test lists
@@ -197,7 +199,7 @@ class Trainer(abc.ABC):
                 pbar.set_description(f"{pbar_name} ({batch_res.loss:.3f})")
                 pbar.update()
 
-                losses.append(batch_res.loss)
+                losses.append(float(batch_res.loss))
                 num_correct += batch_res.num_correct
 
             avg_loss = sum(losses) / num_batches
@@ -208,7 +210,7 @@ class Trainer(abc.ABC):
                 f"Accuracy {accuracy:.1f})"
             )
 
-        return EpochResult(losses=losses, accuracy=accuracy)
+        return EpochResult(losses=losses, accuracy=float(accuracy))
 
 
 class BlocksTrainer(Trainer):

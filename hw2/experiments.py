@@ -111,7 +111,7 @@ def run_experiment(
     fit_res = trainer.fit(
         dl_train=dl_train,
         dl_test=dl_test,
-        num_epochs=2,
+        num_epochs=epochs,
         checkpoints=checkpoints,
         early_stopping=early_stopping,
         print_every=1
