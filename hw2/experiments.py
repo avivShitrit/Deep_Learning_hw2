@@ -66,8 +66,8 @@ def run_experiment(
     ds_test = CIFAR10(root=DATA_DIR, download=True, train=False, transform=tf)
 
     if not device:
-        # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        device = torch.device("cpu")
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        # device = torch.device("cpu")
 
     # Select model class
     if model_type not in MODEL_TYPES:
