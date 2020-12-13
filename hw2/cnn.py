@@ -79,8 +79,11 @@ class ConvClassifier(nn.Module):
         #  CONV->ACTs should exist at the end, without a POOL after them.
         # ====== YOUR CODE: ======
         padding = self.conv_params['padding'] if "padding" in self.conv_params.keys() else 1
+        self.conv_params['padding'] = padding
         stride = self.conv_params['stride'] if "stride" in self.conv_params.keys() else 1
+        self.conv_params['stride'] = stride
         conv_kernel = self.conv_params['kernel_size'] if "kernel_size" in self.conv_params.keys() else 3
+        self.conv_params['kernel_size'] = conv_kernel
         pool_kernel = self.pooling_params['kernel_size'] if "kernel_size" in self.pooling_params.keys() else 1
         self.pooling_params['kernel_size'] = pool_kernel
 
