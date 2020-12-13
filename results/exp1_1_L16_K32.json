@@ -15,8 +15,8 @@
     "filters_per_layer": [
       32
     ],
-    "layers_per_block": 2,
-    "pool_every": 2.0,
+    "layers_per_block": 16,
+    "pool_every": 9.0,
     "hidden_dims": [
       100
     ],
@@ -33,13 +33,13 @@
   "results": {
     "num_epochs": 0,
     "train_loss": [
-      2.3058483600616455
+      2.288165807723999
     ],
     "train_acc": [
-      10.0
+      14.0
     ],
     "test_loss": [
-      2.2954797744750977
+      2.3313348293304443
     ],
     "test_acc": [
       12.0

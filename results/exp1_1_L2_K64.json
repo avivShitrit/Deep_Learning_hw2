@@ -13,7 +13,7 @@
     "lr": 0.001,
     "reg": 0.001,
     "filters_per_layer": [
-      32
+      64
     ],
     "layers_per_block": 2,
     "pool_every": 2.0,
@@ -33,13 +33,13 @@
   "results": {
     "num_epochs": 0,
     "train_loss": [
-      2.3058483600616455
+      2.3152718544006348
     ],
     "train_acc": [
-      10.0
+      7.0
     ],
     "test_loss": [
-      2.2954797744750977
+      2.335064649581909
     ],
     "test_acc": [
       12.0

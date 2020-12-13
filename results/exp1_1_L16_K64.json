@@ -4,8 +4,8 @@
     "out_dir": "./results",
     "seed": 42,
     "device": null,
-    "bs_train": 100,
-    "bs_test": 25,
+    "bs_train": 50,
+    "bs_test": 12,
     "batches": 1,
     "epochs": 1,
     "early_stopping": 5,
@@ -13,10 +13,10 @@
     "lr": 0.001,
     "reg": 0.001,
     "filters_per_layer": [
-      32
+      64
     ],
-    "layers_per_block": 2,
-    "pool_every": 2.0,
+    "layers_per_block": 16,
+    "pool_every": 9.0,
     "hidden_dims": [
       100
     ],
@@ -33,16 +33,16 @@
   "results": {
     "num_epochs": 0,
     "train_loss": [
-      2.3058483600616455
+      2.3046631813049316
     ],
     "train_acc": [
       10.0
     ],
     "test_loss": [
-      2.2954797744750977
+      2.3260247707366943
     ],
     "test_acc": [
-      12.0
+      0.0
     ]
   }
 }
