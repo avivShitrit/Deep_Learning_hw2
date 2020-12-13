@@ -3,9 +3,9 @@ from hw2.experiments import load_experiment
 from cs236781.plot import plot_fit
 
 seed = 42
-batches = 1
-epochs = 1
-bs_train = 100
+batches = 200
+epochs = 20
+bs_train = 300
 def run_exp_1_1():
 	for K in [[32],[64]]:
 		for L in [2,4,8,16]:
