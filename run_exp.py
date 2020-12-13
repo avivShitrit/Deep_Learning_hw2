@@ -3,15 +3,10 @@ from hw2.experiments import load_experiment
 from cs236781.plot import plot_fit
 
 seed = 42
-<<<<<<< Updated upstream
 batches = 200
 epochs = 20
 bs_train = 300
-=======
-batches = 100
-epochs = 20
-bs_train = 200
->>>>>>> Stashed changes
+
 def run_exp_1_1():
 	for K in [[32],[64]]:
 		for L in [2,4,8,16]:
