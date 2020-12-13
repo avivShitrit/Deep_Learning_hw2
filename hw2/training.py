@@ -84,8 +84,6 @@ class Trainer(abc.ABC):
             train_res = self.train_epoch(dl_train, verbose=verbose, **kw)
 #             current_train_loss = sum(train_res.losses) / len(train_res.losses)
             train_loss.extend(train_res.losses)
-            print(len(train_res.losses), train_res.losses[0])
-            
             train_acc.append(train_res.accuracy)
             
             # test and results to test lists

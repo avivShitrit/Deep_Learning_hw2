@@ -319,15 +319,14 @@ class ResNetClassifier(ConvClassifier):
         #  - Use your own ResidualBlock implementation.
         # ====== YOUR CODE: ======
         N = len(self.channels)
-        P = self.pool_every
+        P = int(self.pool_every)
         pool_kernel = self.pooling_params['kernel_size'] if "kernel_size" in self.pooling_params.keys() else 1
         self.pooling_params['kernel_size'] = pool_kernel
 
-
-        for i in range(N // P):
+        for i in range(int(N // P)):
 
             layers.append(ResidualBlock(in_channels=in_channels,
-                                        channels=self.channels[i * P:P * (i + 1)],
+                                        channels=self.channels[i * P : P * (i + 1)],
                                         kernel_sizes=[3] * P,
                                         batchnorm=self.batchnorm,
                                         dropout=self.dropout,
