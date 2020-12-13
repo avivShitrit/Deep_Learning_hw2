@@ -78,10 +78,10 @@ class ConvClassifier(nn.Module):
         #  Note: If N is not divisible by P, then N mod P additional
         #  CONV->ACTs should exist at the end, without a POOL after them.
         # ====== YOUR CODE: ======
-        padding = self.conv_params['padding']
-        stride = self.conv_params['stride']
-        conv_kernel = self.conv_params['kernel_size']
-        pool_kernel = pool_kernel = self.pooling_params['kernel_size'] if "kernel_size" in self.pooling_params.keys() else 1
+        padding = self.conv_params['padding'] if "padding" in self.conv_params.keys() else 1
+        stride = self.conv_params['stride'] if "stride" in self.conv_params.keys() else 1
+        conv_kernel = self.conv_params['kernel_size'] if "kernel_size" in self.conv_params.keys() else 3
+        pool_kernel = self.pooling_params['kernel_size'] if "kernel_size" in self.pooling_params.keys() else 1
         self.pooling_params['kernel_size'] = pool_kernel
 
         N = len(self.channels)
@@ -319,6 +319,7 @@ class ResNetClassifier(ConvClassifier):
         P = self.pool_every
         pool_kernel = self.pooling_params['kernel_size'] if "kernel_size" in self.pooling_params.keys() else 1
         self.pooling_params['kernel_size'] = pool_kernel
+
 
         for i in range(N // P):
 
