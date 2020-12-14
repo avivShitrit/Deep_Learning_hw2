@@ -80,12 +80,8 @@ def run_all_exp():
     # run_exp_1_1()
     # run_exp_1_2()
     # run_exp_1_3()
-<<<<<<< HEAD
     # run_exp_1_4()
     run_exp_2()
-=======
-    run_exp_1_4()
->>>>>>> d88c19ae7bd6f8482dd2da19b690a79d74a8e79f
 
 
 if __name__ == "__main__":
