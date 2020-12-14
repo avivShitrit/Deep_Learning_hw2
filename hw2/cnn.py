@@ -369,7 +369,7 @@ class ResNetClassifier(ConvClassifier):
 
 
 class YourCodeNet(ConvClassifier):
-    def __init__(self, in_size, out_classes, channels, pool_every, hidden_dims):
+    def __init__(self, in_size, out_classes, channels, pool_every, hidden_dims, **kwargs):
         super().__init__(in_size, out_classes, channels, pool_every,
                          hidden_dims)
 
