@@ -64,12 +64,24 @@ def run_exp_1_4():
             model_type='resnet',
         )
 
+def run_exp_2():
+	K = [32, 64, 128]
+    for L in [3, 6, 9, 12]:
+		experiments.run_experiment(
+	            'exp2', seed=seed, bs_train=bs_train, batches=batches,
+	            epochs=epochs, early_stopping=5,
+	            filters_per_layer=K, layers_per_block=L, pool_every=((L / 2) + 1),
+	            hidden_dims=[100],
+	            model_type='ycn',
+	        )
+
 
 def run_all_exp():
-    run_exp_1_1()
-    run_exp_1_2()
-    run_exp_1_3()
-    run_exp_1_4()
+    # run_exp_1_1()
+    # run_exp_1_2()
+    # run_exp_1_3()
+    # run_exp_1_4()
+    run_exp_2()
 
 
 if __name__ == "__main__":
