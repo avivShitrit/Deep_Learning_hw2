@@ -45,6 +45,7 @@ def run_experiment(
     activaion_params={},
     pooling_type="avg",
     pooling_params={},
+    momentum=0.9
     # You can add extra configuration for your experiments here
     **kw
 ):
@@ -102,7 +103,7 @@ def run_experiment(
         pooling_params=pooling_params
     )
     loss_fn = torch.nn.CrossEntropyLoss()
-    optimizer = torch.optim.SGD(model.parameters(), lr=1e-2, momentum=0.9,)
+    optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=reg)
     trainer = training.TorchTrainer(model, loss_fn, optimizer, device)
 
     dl_train = torch.utils.data.DataLoader(ds_train, bs_train, shuffle=False)
