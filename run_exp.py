@@ -6,13 +6,14 @@ seed = 42
 batches = 200
 epochs = 20
 bs_train = 300
+
 def run_exp_1_1():
 	for K in [[32],[64]]:
 		for L in [2,4,8,16]:
 			experiments.run_experiment(
 			    'exp1_1', seed=seed, bs_train=bs_train, batches=batches, epochs=epochs, early_stopping=5,
 			    filters_per_layer=K, layers_per_block=L, pool_every=((L/2)+1), hidden_dims=[100],
-			    model_type='resnet',
+			    model_type='cnn',
 				)
 
 def run_exp_1_2():
@@ -21,7 +22,7 @@ def run_exp_1_2():
 			experiments.run_experiment(
 			    'exp1_2', seed=seed, bs_train=bs_train, batches=batches, epochs=epochs, early_stopping=5,
 			    filters_per_layer=K, layers_per_block=L, pool_every=((L/2)+1), hidden_dims=[100],
-			    model_type='resnet',
+			    model_type='cnn',
 				)
 
 def run_exp_1_3():
@@ -30,7 +31,7 @@ def run_exp_1_3():
 		experiments.run_experiment(
 		    'exp1_3', seed=seed, bs_train=bs_train, batches=batches, epochs=epochs, early_stopping=5,
 		    filters_per_layer=K, layers_per_block=L, pool_every=((L/2)+1), hidden_dims=[100],
-		    model_type='resnet',
+		    model_type='cnn',
 			)
 
 def run_exp_1_4():
