@@ -331,8 +331,7 @@ class ResNetClassifier(ConvClassifier):
         for i in range(int(N // P)):
 
             layers.append(ResidualBlock(in_channels=in_channels,
-                                        channels=self.channels[
-                                                 i * P: P * (i + 1)],
+                                        channels=self.channels[i * P: P * (i + 1)],
                                         kernel_sizes=[3] * P,
                                         batchnorm=self.batchnorm,
                                         dropout=self.dropout,
@@ -439,7 +438,6 @@ class YourCodeNet(ConvClassifier):
         self.in_size = self.channels[-1], in_h, in_w
         seq = nn.Sequential(*layers)
         return seq
-
 
     def _make_classifier(self):
         layers = []

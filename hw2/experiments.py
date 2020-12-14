@@ -109,7 +109,8 @@ def run_experiment(
 
     dl_train = torch.utils.data.DataLoader(ds_train, bs_train, shuffle=False)
     dl_test = torch.utils.data.DataLoader(ds_test, bs_test, shuffle=False)
-    
+
+    print(model)
     fit_res = trainer.fit(
         dl_train=dl_train,
         dl_test=dl_test,
