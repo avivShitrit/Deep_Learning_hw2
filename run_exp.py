@@ -55,7 +55,7 @@ def run_exp_1_4():
             model_type='resnet',
         )
     K = [64, 128, 256]
-    for L in [2, 4, 8]:
+    for L in [2]:
         experiments.run_experiment(
             'exp1_4', seed=seed, bs_train=bs_train, batches=batches,
             epochs=epochs, early_stopping=5,
@@ -66,9 +66,9 @@ def run_exp_1_4():
 
 
 def run_all_exp():
-    run_exp_1_1()
-    run_exp_1_2()
-    run_exp_1_3()
+    # run_exp_1_1()
+    # run_exp_1_2()
+    # run_exp_1_3()
     run_exp_1_4()
 
 
