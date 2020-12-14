@@ -40,7 +40,7 @@ def run_exp_1_4():
 		experiments.run_experiment(
 		    'exp1_4', seed=seed, bs_train=bs_train, batches=batches, epochs=epochs, early_stopping=5,
 		    filters_per_layer=K, layers_per_block=L, pool_every=((L/2)+1), hidden_dims=[100],
-		    model_type='resnet
+		    model_type='resnet'
 		    			)
 	K=[64,128,256]
 	for L in [2,4,8]:
