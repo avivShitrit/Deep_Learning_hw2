@@ -1,0 +1,9 @@
+*** SLURM BATCH JOB 'test_job' STARTING ***
+*** Activating environment cs236781-hw ***
+Traceback (most recent call last):
+  File "run_exp_adam.py", line 1, in <module>
+    import hw2.experiments as experiments
+  File "/home/aviv.shitrit/HW2/Deep_Learning_hw2/hw2/experiments.py", line 50, in <module>
+    **kw
+NameError: name 'kw' is not defined
+*** SLURM BATCH JOB 'test_job' DONE ***

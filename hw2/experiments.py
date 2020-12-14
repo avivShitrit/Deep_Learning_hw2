@@ -45,7 +45,7 @@ def run_experiment(
     activaion_params={},
     pooling_type="avg",
     pooling_params={},
-    momentum=0.9
+    momentum=0.9,
     # You can add extra configuration for your experiments here
     **kw
 ):
