@@ -90,6 +90,7 @@ def run_experiment(
     channels = []
     for x in filters_per_layer:
         channels.extend([x] * layers_per_block)
+        
     model = model_cls(
         in_size=in_size,
         out_classes=num_classes,
@@ -108,7 +109,7 @@ def run_experiment(
 
     dl_train = torch.utils.data.DataLoader(ds_train, bs_train, shuffle=False)
     dl_test = torch.utils.data.DataLoader(ds_test, bs_test, shuffle=False)
-
+    
     fit_res = trainer.fit(
         dl_train=dl_train,
         dl_test=dl_test,
@@ -116,7 +117,8 @@ def run_experiment(
         checkpoints=checkpoints,
         early_stopping=early_stopping,
         print_every=1,
-        max_batches=batches
+        max_batches=batches,
+        **kw
     )
 
     # ========================
