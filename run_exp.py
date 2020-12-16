@@ -79,8 +79,8 @@ def run_all_exp():
     # run_exp_1_1()
     # run_exp_1_2()
     # run_exp_1_3()
+    # run_exp_1_4()
     run_exp_2()
-    run_exp_1_4()
 
 
 if __name__ == "__main__":

@@ -10,13 +10,13 @@ math (delimited with $$).
 
 part1_q1 = r"""
 
-1. the jacobian matrix w.r.t to X will have the same shape as the weights matrix.
-X's shape is 128x1024 so in order to get the out matrix with shape of 128x2048, the shape of the weights matrix will have to be 1024x2048 and that's the jacobians shape.
+1. the jacobian matrix w.r.t to X has a shape of (inputs size)*(outputs size).
+X's shape is 128x1024 and the the ouput shape is 128x2048, the shape of the jacobians matrix will be (128*1024)x(128*2048).
 
 2. first, we will calculate how many bits we need to store in order to store the whole jacobian matrix.
-1024*2048*32 = 67,108,864 bits.
+128*1024*128*2048*32 = 1,099,511,627,776
 now we need to convert it to gigabytes:
-67,108,864/8/1024/1024/1024 = 0.0078125 GB of RAM memory
+1,099,511,627,776/8/1024/1024/1024 = 128 GB of RAM memory
 """
 
 # ==============
@@ -101,41 +101,49 @@ When the training set is big enough this occurrences are more rare.
 
 part3_q1 = r"""
 **Your answer:**
+1. we'll caculate the numper of parameters for each convolution layer.
+bottleneck Residual block number of parameters:
+conv1 = ((1*1*64)+1)*64 = 4160
+conv2 = ((3*3*64)+1)*64 = 36928
+conv3 = ((1*1*64)+1)*256 = 16640
+total = 57728
 
+regular residual block number of parameters:
+conv1 = ((3*3*256)+1)*256 = 590080
+conv2 = ((3*3*256)+1)*256 = 590080
+total = 1180160
 
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
+2. x*y*64 input
+conv1 = 64*input
 
 """
 
 part3_q2 = r"""
 **Your answer:**
+1. As we can see from the expirements results, the best accuracies is achived by the the most shallow networks with L=2 or L=4.
+in the first expirement where K=32 the best accuracy is achived by the most shallow Net's got similar results with overfitting to the
+test set (80% accuracy instead of 60% over the test set) also as the Net got deeper the accuracy decreased till a point where L=16 
+that the accuracy didn't improve over time therefore the graph is flat.
 
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
+2. As we said for L=16 the wasn't trainable The reason for this behavior can be that the information isn't reaching
+the deepest layers duo to exsecive computations along the way so when the layer reaches the classifeir the 
+information is almost random so we have no improvement in accuracy.
+two things we can do to resolve this situation:
+	1. we can add batchNorm layers to our network to noramlize and reduces the internal covariante shift so the inforamtion 
+	at the end of the net is nore effected by the input data.
+	2. we can add more pooling layers along the Net to reduce the number of parameters to learn and the amount of computatio
+	n performed in the network which will cause some training on the deeper layers.
 
 """
 
 part3_q3 = r"""
 **Your answer:**
 
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
-
+In this test we can see a conection between the K/L ratio and the accuracies, when L=2,4 we can see that the bset accuracies
+are achived with K=32 and 64 respectivly so the K/L ratio in both was 16, also when L=8 we can see that K=128 and 256
+got the best results which mean that a K/L ration between 16 to 32 will probably achived the best accuracy.
+As for big K/L ration the results are not conclusive cause for L=2 and K=256 we can see that the model got better results the
+L=2, K=128, but for L=4 we can see that K=256 the accuracy is the lowest so we can assume that
 """
 
 part3_q4 = r"""
