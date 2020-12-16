@@ -3,9 +3,9 @@ from hw2.experiments import load_experiment
 from cs236781.plot import plot_fit
 
 seed = 42
-batches = 200
+batches = 300
 epochs = 20
-bs_train = 300
+bs_train = 50
 
 
 def run_exp_1_1():
@@ -55,9 +55,9 @@ def run_exp_1_4():
             model_type='resnet',
         )
     K = [64, 128, 256]
-    for L in [2]:
+    for L in [2, 4, 8]:
         experiments.run_experiment(
-            'exp1_4', seed=seed, bs_train=bs_train, batches=batches,
+            'exp1_4', seed=seed, bs_train=bs_train,bs_test=bs_train, batches=batches,
             epochs=epochs, early_stopping=5,
             filters_per_layer=K, layers_per_block=L, pool_every=((L / 2) + 1),
             hidden_dims=[100],
@@ -79,8 +79,8 @@ def run_all_exp():
     # run_exp_1_1()
     # run_exp_1_2()
     # run_exp_1_3()
-    run_exp_1_4()
     run_exp_2()
+    run_exp_1_4()
 
 
 if __name__ == "__main__":

@@ -1,0 +1,15 @@
+*** SLURM BATCH JOB 'test_job' STARTING ***
+*** Activating environment cs236781-hw ***
+Files already downloaded and verified
+Files already downloaded and verified
+Traceback (most recent call last):
+  File "run_exp.py", line 93, in <module>
+    run_all_exp()
+  File "run_exp.py", line 82, in run_all_exp
+    run_exp_2()
+  File "run_exp.py", line 70, in run_exp_2
+    experiments.run_experiment(
+  File "/home/aviv.shitrit/HW2/Deep_Learning_hw2/hw2/experiments.py", line 94, in run_experiment
+    model = model_cls(
+TypeError: __init__() got an unexpected keyword argument 'activation_type'
+*** SLURM BATCH JOB 'test_job' DONE ***
