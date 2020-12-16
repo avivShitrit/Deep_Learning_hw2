@@ -143,45 +143,63 @@ In this test we can see a conection between the K/L ratio and the accuracies, wh
 are achived with K=32 and 64 respectivly so the K/L ratio in both was 16, also when L=8 we can see that K=128 and 256
 got the best results which mean that a K/L ration between 16 to 32 will probably achived the best accuracy.
 As for big K/L ration the results are not conclusive cause for L=2 and K=256 we can see that the model got better results the
-L=2, K=128, but for L=4 we can see that K=256 the accuracy is the lowest so we can assume that
+L=2, K=128, but for L=4 we can see that K=256 the accuracy is the lowest.
+As for small K/L ration we can see that when K=4,8 the models with the smallest ratio got the worst accuracies.
+When we compare expirement 1.2 to expirement 1.1 we can come to the same conclution that a smallest K/L ratios preduced the
+worst accuracies.
+
 """
 
 part3_q4 = r"""
 **Your answer:**
 
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
+We can see that deeper networks are non trainable for L=3,4 the models accuracies didn't change over time.
+For L=1,2 we got decent accuracies and we can see that the most shallow model got the best results, although we can see 
+that where L=1 the globalization error is the highest so the is overfitted to the train set with almost 90% accuracy.
 
 """
 
 part3_q5 = r"""
 **Your answer:**
 
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
+1.In exp 1.4 we can see that even models with more then 16 layers are trainable but the model results still best 
+when L is the smallest.
+We can see that most of the models in this experiment is overfitting to the train set.
+When comparing to exp 1.1 and 1.3 we can coclude that the use of the resNet allowed us to created deeper models,
+but still deeper models got worst results the the shllow ones.
+When can also see that the resNet got lower accuracies and bigger generalization error then the CNN.
 
 """
 
 part3_q6 = r"""
 **Your answer:**
 
+1.we'll explain each modifaction we made and the reason we made it:
+	1. we added hidden layers to the classifier - to have deeper and more spesific clasification to the features that
+	   extracted from the cov layers, in that way our classifier have more parameters to train.
+	2. we used the CNN model - as we can see from the other experiments results the CNN model was more accurate
+	   so we decided to use it.
+	3. we added batchnorm and dropuot to the model - because exp 2 uses deep networks we added batchnorm and dropout
+	   layers between conv layers to better cope with deep models and made then trainable.
 
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
+2.
+Non trainable models:
+In exp 2 duo to our modifications all of the models are trainable even model with 36 layers got some improvment
+in accuracy over time when in exp 1 when we used the CNN, models with more then 8 layers where non trainable.
+
+Generalization Error:
+In exp 2 we have small generalization error, the test set accuracy is matchnig the train set accuracy in all the models,
+so the models are not overfitted to the spesific train set when in exp 1 all the models train set accuray was segnificantly
+higher then the test set accuracy.
+
+L w.r.t to accuracy:
+In both experiments we can see that when L is the smallest the accuracies are higher, so we can conclude that 
+having alot of adjacent layers with the same shape leading to worst results.
+
+Overall comparison:
+In exp 2 we got at best 60% accuracy for the test set when in exp 1 some of the models managed to have even 65% accuracy,
+but as we mantioned before the generalization error in exp 2 was secnificantly better then exp 1 models so overall 
+we think that the model from exp 2 will be better classifier the the models from exp 1 for unknown test sets.
 
 """
 # ==============
