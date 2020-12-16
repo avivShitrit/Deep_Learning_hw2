@@ -329,7 +329,7 @@ class ResNetClassifier(ConvClassifier):
         self.pooling_params['kernel_size'] = pool_kernel
 
         for i in range(int(N // P)):
-            d = self.channels[i * P: P * (i + 1)]
+            outs = self.channels[i * P: P * (i + 1)]
             layers.append(ResidualBlock(in_channels=in_channels,
                                         channels=self.channels[i * P: P * (i + 1)],
                                         kernel_sizes=[3] * P,
@@ -339,7 +339,7 @@ class ResNetClassifier(ConvClassifier):
                                         activation_params=self.activation_params))
 
             # update dimensions
-            in_channels = self.channels[i * P]
+            in_channels = outs[-1]
 
             # pooling layer
             if self.pooling_type == "avg":
@@ -369,7 +369,7 @@ class ResNetClassifier(ConvClassifier):
 
 
 class YourCodeNet(ConvClassifier):
-    def __init__(self, in_size, out_classes, channels, pool_every, hidden_dims, **kwargs):
+    def __init__(self, in_size, out_classes, channels, pool_every, hidden_dims,                           conv_params={}, activation_type='relu', activation_params={},                             pooling_type='max', pooling_params={}):
         super().__init__(in_size, out_classes, channels, pool_every,
                          hidden_dims)
 
