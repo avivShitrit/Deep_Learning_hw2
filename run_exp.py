@@ -3,7 +3,11 @@ from hw2.experiments import load_experiment
 from cs236781.plot import plot_fit
 
 seed = 42
+<<<<<<< HEAD
 batches = 500
+=======
+batches = 300
+>>>>>>> 5f5b73a43417d759204c15a4cf3ce9e522426be6
 epochs = 20
 bs_train = 50
 
@@ -68,10 +72,17 @@ def run_exp_2():
     K = [32, 64, 128]
     for L in [3,6,9,12]:
         experiments.run_experiment(
+<<<<<<< HEAD
             'exp2', seed=seed, bs_train=50, batches=500,
             epochs=35, early_stopping=5,
             filters_per_layer=K, layers_per_block=L, pool_every=((L / 2) + 1),
             hidden_dims=[256,100,100],
+=======
+            'exp2', seed=seed, bs_train=bs_train, batches=batches,
+            epochs=epochs, early_stopping=5,
+            filters_per_layer=K, layers_per_block=L, pool_every=((L / 2) + 1),
+            hidden_dims=[100],
+>>>>>>> 5f5b73a43417d759204c15a4cf3ce9e522426be6
             model_type='ycn'
         )
 
@@ -82,7 +93,10 @@ def run_all_exp():
     # run_exp_1_4()
     run_exp_2()
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5f5b73a43417d759204c15a4cf3ce9e522426be6
 
 if __name__ == "__main__":
     EXPERIMENTS = {

@@ -45,6 +45,7 @@ def run_experiment(
     activaion_params={},
     pooling_type="avg",
     pooling_params={},
+    momentum=0.9,
     # You can add extra configuration for your experiments here
     **kw
 ):
@@ -66,8 +67,8 @@ def run_experiment(
     ds_test = CIFAR10(root=DATA_DIR, download=True, train=False, transform=tf)
 
     if not device:
-        # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        device = torch.device("cpu")
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        # device = torch.device("cpu")
 
     # Select model class
     if model_type not in MODEL_TYPES:
@@ -89,6 +90,7 @@ def run_experiment(
     channels = []
     for x in filters_per_layer:
         channels.extend([x] * layers_per_block)
+        
     model = model_cls(
         in_size=in_size,
         out_classes=num_classes,
@@ -102,12 +104,13 @@ def run_experiment(
         pooling_params=pooling_params
     )
     loss_fn = torch.nn.CrossEntropyLoss()
-    optimizer = torch.optim.SGD(model.parameters(), lr=1e-2, momentum=0.9,)
+    optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=reg)
     trainer = training.TorchTrainer(model, loss_fn, optimizer, device)
 
     dl_train = torch.utils.data.DataLoader(ds_train, bs_train, shuffle=False)
     dl_test = torch.utils.data.DataLoader(ds_test, bs_test, shuffle=False)
 
+    print(model)
     fit_res = trainer.fit(
         dl_train=dl_train,
         dl_test=dl_test,
@@ -115,7 +118,8 @@ def run_experiment(
         checkpoints=checkpoints,
         early_stopping=early_stopping,
         print_every=1,
-        max_batches=batches
+        max_batches=batches,
+        **kw
     )
 
     # ========================

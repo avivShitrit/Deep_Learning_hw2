@@ -1,3 +1,4 @@
+import datetime
 import os
 import abc
 import sys
@@ -59,7 +60,7 @@ class Trainer(abc.ABC):
         :param print_every: Print progress every this number of epochs.
         :return: A FitResult object containing train and test losses per epoch.
         """
-        actual_num_epochs = 0
+        actual_num_epochs = num_epochs
         train_loss, train_acc, test_loss, test_acc = [], [], [], []
 
         best_acc = None
@@ -95,15 +96,15 @@ class Trainer(abc.ABC):
             # update best_acc and save the improves result via checkpoints
             if best_acc is None or best_acc < test_acc[-1]:
                 best_acc = test_acc[-1]
-                no_improvement = 0
+                epochs_without_improvement = 0
                 if checkpoints:
                     timestamp = '{:%Y-%b-%d %H:%M:%S}'.format(datetime.datetime.now())
                     filename = f'{checkpoints}_{timestamp}.pt'
                     torch.save(self.model, filename)
             else:
-                no_improvement += 1
+                epochs_without_improvement += 1
             
-            if early_stopping is not None and no_improvement >= early_stopping:
+            if early_stopping is not None and epochs_without_improvement >= early_stopping:
                 actual_num_epochs = epoch
                 break
             # ========================

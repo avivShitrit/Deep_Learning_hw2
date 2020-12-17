@@ -78,13 +78,17 @@ class ConvClassifier(nn.Module):
         #  Note: If N is not divisible by P, then N mod P additional
         #  CONV->ACTs should exist at the end, without a POOL after them.
         # ====== YOUR CODE: ======
-        padding = self.conv_params['padding'] if "padding" in self.conv_params.keys() else 1
+        padding = self.conv_params[
+            'padding'] if "padding" in self.conv_params.keys() else 1
         self.conv_params['padding'] = padding
-        stride = self.conv_params['stride'] if "stride" in self.conv_params.keys() else 1
+        stride = self.conv_params[
+            'stride'] if "stride" in self.conv_params.keys() else 1
         self.conv_params['stride'] = stride
-        conv_kernel = self.conv_params['kernel_size'] if "kernel_size" in self.conv_params.keys() else 3
+        conv_kernel = self.conv_params[
+            'kernel_size'] if "kernel_size" in self.conv_params.keys() else 3
         self.conv_params['kernel_size'] = conv_kernel
-        pool_kernel = self.pooling_params['kernel_size'] if "kernel_size" in self.pooling_params.keys() else 1
+        pool_kernel = self.pooling_params[
+            'kernel_size'] if "kernel_size" in self.pooling_params.keys() else 1
         self.pooling_params['kernel_size'] = pool_kernel
 
         N = len(self.channels)
@@ -268,10 +272,11 @@ class ResidualBlock(nn.Module):
         if in_channels == channels[-1]:
             self.shortcut_path = nn.Sequential(nn.Identity())
         else:
-            self.shortcut_path = nn.Sequential(nn.Conv2d(in_channels=in_channels,
-                                                         out_channels=channels[-1],
-                                                         kernel_size=1,
-                                                         bias=False))
+            self.shortcut_path = nn.Sequential(
+                nn.Conv2d(in_channels=in_channels,
+                          out_channels=channels[-1],
+                          kernel_size=1,
+                          bias=False))
 
         # ========================
 
@@ -324,9 +329,9 @@ class ResNetClassifier(ConvClassifier):
         self.pooling_params['kernel_size'] = pool_kernel
 
         for i in range(int(N // P)):
-
+            outs = self.channels[i * P: P * (i + 1)]
             layers.append(ResidualBlock(in_channels=in_channels,
-                                        channels=self.channels[i * P : P * (i + 1)],
+                                        channels=self.channels[i * P: P * (i + 1)],
                                         kernel_sizes=[3] * P,
                                         batchnorm=self.batchnorm,
                                         dropout=self.dropout,
@@ -334,7 +339,7 @@ class ResNetClassifier(ConvClassifier):
                                         activation_params=self.activation_params))
 
             # update dimensions
-            in_channels = self.channels[i]
+            in_channels = outs[-1]
 
             # pooling layer
             if self.pooling_type == "avg":
@@ -364,7 +369,7 @@ class ResNetClassifier(ConvClassifier):
 
 
 class YourCodeNet(ConvClassifier):
-    def __init__(self, in_size, out_classes, channels, pool_every, hidden_dims):
+    def __init__(self, in_size, out_classes, channels, pool_every, hidden_dims,                           conv_params={}, activation_type='relu', activation_params={},                             pooling_type='max', pooling_params={}):
         super().__init__(in_size, out_classes, channels, pool_every,
                          hidden_dims)
 
@@ -373,5 +378,85 @@ class YourCodeNet(ConvClassifier):
     #  For example, add batchnorm, dropout, skip connections, change conv
     #  filter sizes etc.
     # ====== YOUR CODE: ======
+    def _make_feature_extractor(self):
+        in_channels, in_h, in_w, = tuple(self.in_size)
+        layers = []
+        padding = self.conv_params[
+            'padding'] if "padding" in self.conv_params.keys() else 1
+        self.conv_params['padding'] = padding
+        stride = self.conv_params[
+            'stride'] if "stride" in self.conv_params.keys() else 1
+        self.conv_params['stride'] = stride
+        conv_kernel = self.conv_params[
+            'kernel_size'] if "kernel_size" in self.conv_params.keys() else 3
+        self.conv_params['kernel_size'] = conv_kernel
+        pool_kernel = self.pooling_params[
+            'kernel_size'] if "kernel_size" in self.pooling_params.keys() else 1
+        self.pooling_params['kernel_size'] = pool_kernel
+        N = len(self.channels)
+        P = self.pool_every
 
+        for i in range(N):
+            # conv layer
+            layers.append(nn.Conv2d(in_channels=in_channels,
+                                    out_channels=self.channels[i],
+                                    **self.conv_params))
+
+            # batchnorm
+            layers.append(nn.BatchNorm2d(num_features=self.channels[i]))
+
+            # relu / leaky relu layer
+            if self.activation_type == "lrelu":
+                layers.append(nn.LeakyReLU(**self.activation_params))
+            else:
+                layers.append(nn.ReLU(**self.activation_params))
+
+            # update dimensions
+            temp_dim = (2 * padding - conv_kernel)
+            in_h = int(
+                torch.floor(torch.tensor((in_h + temp_dim) / stride)) + 1)
+            in_w = int(
+                torch.floor(torch.tensor((in_w + temp_dim) / stride)) + 1)
+            in_channels = self.channels[i]
+
+            # dropout
+            layers.append(nn.Dropout2d(p=0.2))
+
+            # pooling layer
+            if (i + 1) % P == 0:
+                if self.pooling_type == "avg":
+                    layers.append(nn.AvgPool2d(**self.pooling_params))
+                else:
+                    layers.append(nn.MaxPool2d(**self.pooling_params))
+
+                # update dimensions
+                in_h = int(torch.floor(
+                    torch.tensor((in_h - pool_kernel) / pool_kernel)) + 1)
+                in_w = int(torch.floor(
+                    torch.tensor((in_w - pool_kernel) / pool_kernel)) + 1)
+
+        self.in_size = self.channels[-1], in_h, in_w
+        seq = nn.Sequential(*layers)
+        return seq
+
+    def _make_classifier(self):
+        layers = []
+        first_in_dims = int(
+            self.channels[-1] * self.in_size[1] * self.in_size[2])
+
+        for indims, outdims in zip([first_in_dims] + self.hidden_dims,
+                                   self.hidden_dims):
+            layers.append(nn.Linear(indims, outdims))
+
+            if self.activation_type == "lrelu":
+                layers.append(nn.LeakyReLU(**self.activation_params))
+            else:
+                layers.append(nn.ReLU(**self.activation_params))
+
+            layers.append(nn.Dropout2d(p=0.2))
+
+        layers.append(nn.Linear(self.hidden_dims[-1], self.out_classes))
+
+        seq = nn.Sequential(*layers)
+        return seq
     # ========================

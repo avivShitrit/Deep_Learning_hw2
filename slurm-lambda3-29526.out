@@ -1,0 +1,7 @@
+*** SLURM BATCH JOB 'test_job' STARTING ***
+*** Activating environment cs236781-hw ***
+  File "run_exp.py", line 60
+    'exp1_4', seed=seed, bs_train=bs_train,bs_test=bs_train batches=batches,
+                                                            ^
+SyntaxError: invalid syntax
+*** SLURM BATCH JOB 'test_job' DONE ***
